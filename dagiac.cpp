@@ -12,25 +12,14 @@ using namespace std;
 
 int enable_click  = 1;
 int isDrawPolygon = 0;
-//char* listTextHelper[] = 
-//	{ 
-//		"Please Load File for run demo...", 
-//		"Load File Success!", 
-//		"Filling the graph using the ScanLine algorithm",
-//		"Fill Success", 
-//		"Filling the graph using the FloodFill algorithm", 
-//		"Please choose color!",
-//		"Loading file...",
-//	};
-
-//int sizeListTextHelper = sizeof(listTextHelper)/sizeof(*listTextHelper);
+bool isDraw = false;
 
 struct toado {
     int x;
     int y;
 };
 
-int sodinh, xc, yc;
+int sodinh, xc = 234, yc =134;
 FILE *fp;
 
 struct toado td[MAX]; //moi td la mot kieu toado(x,y)
@@ -40,15 +29,11 @@ int widthButton = 100, heightButton = 40;
 
 // Khai báo toa do cac button
 struct toado buttonLoadFile    = { 30 , 500};
-struct toado buttonFloodFill   = { 30 + 100 + 60, 500};
-struct toado buttonScanLine    = { 30 + (100 + 60)*2, 500};
-struct toado buttonChangeColor = { 30 + (100 + 60)*3, 500};
-struct toado buttonAbout       = { 30 + (100 + 60)*4, 500};
-//struct toado buttonLoadFile    ={ 610, 10};
-//struct toado buttonFloodFill   ={ 610, 70};
-//struct toado buttonScanLine    ={ 610, 130};
-//struct toado buttonChangeColor ={ 610, 190};
-//struct toado buttonAbout       ={ 610, 250};
+struct toado buttonDraw        = { 30 + (100 + 30)*1, 500};
+struct toado buttonFloodFill   = { 30 + (100 + 30)*2, 500};
+struct toado buttonScanLine    = { 30 + (100 + 30)*3, 500};
+struct toado buttonChangeColor = { 30 + (100 + 30)*4, 500};
+struct toado buttonAbout       = { 30 + (100 + 30)*5, 500};
 
 //------------------------------
 void readfile();
@@ -200,18 +185,6 @@ void drawTextHelper(char text[],bool display,  bool isSuccess){
 	settextstyle(2,0,7);
 	outtextxy( 50,570,text);
 }
-//void drawTextHelper(int index, int isSuccess){
-//	// clear text in screen
-//	setcolor(0);
-//	settextstyle(2,0,7); 
-//	for (int i=0; i<  sizeListTextHelper; i++ ){		
-//		outtextxy( 50,570,listTextHelper[i]);
-//	}
-//	// display new text
-//	setcolor(isSuccess? 2: 15);
-//	settextstyle(2,0,7);
-//	outtextxy( 50,570,listTextHelper[index]);
-//}
 
 void colorPicker(bool isDisplay){
 	int x = 10, y = 600;
@@ -236,12 +209,23 @@ void displayAbout(bool isDisplay){
 	rectangle(40,570, 600,700);
 }
 
+void displayTutorialDraw(bool isDisplay){
+	setcolor(isDisplay? 15 : 0);
+	settextstyle(2,0,7);
+	outtextxy( 50,570,"Left click to draw graph");
+	setcolor(isDisplay? 12 : 0);
+	outtextxy( 50,600,"--- Right click to confirm completion ---");
+}
+
 //=========== Ve border va cac Button ======================
+struct toado topBorder = { 10,10};
+struct toado bottomBorder = { 800,480};
+
 void veUI(){
 	//--------- ve border --------------
 	setcolor(15);
 	setlinestyle(0,1,3);
-	rectangle(10,10, 800,480);
+	rectangle(topBorder.x,topBorder.y, bottomBorder.x,bottomBorder.y);
 	
 	setcolor(15);
 	
@@ -249,6 +233,11 @@ void veUI(){
 	rectangle(buttonLoadFile.x,buttonLoadFile.y, buttonLoadFile.x + widthButton,buttonLoadFile.y + heightButton);
 	settextstyle(2,0,7);
 	outtextxy(buttonLoadFile.x + 10 ,buttonLoadFile.y + 10,"Load File");
+	
+	//-------Draw Button
+	rectangle(buttonDraw.x,buttonDraw.y, buttonDraw.x + widthButton,buttonDraw.y + heightButton);
+	settextstyle(2,0,7);
+	outtextxy(buttonDraw.x + 25 ,buttonDraw.y + 10,"Draw");
 	
 	setcolor(isDrawPolygon == 1? 15: 8);
 	//----------Flood Fill Button
@@ -273,7 +262,55 @@ void veUI(){
 	outtextxy(buttonAbout.x + 25,buttonAbout.y + 10,"About");
 }
 
-//====================== Bat Su kien click chuot=========================
+//====================== Bat Su kien ve hinh=========================
+void Drawing(){
+	int x_mouse;
+	int y_mouse;
+	printf(" =============== ");
+	sodinh = 0;
+
+    for (int i = 0; i < sodinh; i++) {
+        fscanf(fp, "%d %d", &td[i].x, &td[i].y); //doc toa do & in ra ca diem
+    }
+    
+    td[sodinh].x = td[0].x;
+    td[sodinh].y = td[0].y;
+	
+	while(true){
+		//get even mouse click
+		if(ismouseclick(WM_LBUTTONDOWN)){
+			//get position of mouse
+			getmouseclick(WM_LBUTTONDOWN, x_mouse, y_mouse);
+			//print x,y mouse to console
+			printf(" draw (%d,%d)",x_mouse,y_mouse);
+			//checking for click in border 
+			if(x_mouse > topBorder.x && x_mouse < bottomBorder.x 
+				&& y_mouse > topBorder.y && y_mouse < bottomBorder.y)
+			{
+				printf("toa do duoc chon: (%d, %d) \n",x_mouse, y_mouse);
+				circle(x_mouse, y_mouse, 2);
+						
+				td[sodinh].x = x_mouse;
+				td[sodinh].y = y_mouse;
+				sodinh ++;
+			}
+			//check right mouse click to exit loop
+			
+		}
+		if(ismouseclick(WM_RBUTTONDOWN)){
+			getmouseclick(WM_RBUTTONDOWN,x_mouse,y_mouse);
+			printf("\nExiting Draw...");
+			
+			
+			td[sodinh].x = td[0].x;
+    		td[sodinh].y = td[0].y;	
+			break;
+		}
+		delay(1000);//wait for next cycle mouse click
+	}
+}
+
+//====================== Bat Su kien click BUTTONS=========================
 void mouse(){
 	int x_mouse;
 	int y_mouse;
@@ -285,6 +322,7 @@ void mouse(){
 	drawTextHelper(textHelper, true, false);
 	
 	while(enable_click){
+//		printf("enable_click");
 		//get even mouse click
 		if(ismouseclick(WM_LBUTTONDOWN)){
 			//get position of mouse
@@ -308,6 +346,29 @@ void mouse(){
 				strcpy(textHelper, "Load File Success!");
 				drawTextHelper(textHelper, true, true);
 			}
+			if(x_mouse > buttonDraw.x && x_mouse <( buttonDraw.x + widthButton ) 
+				&& y_mouse > buttonDraw.y && y_mouse < (buttonDraw.y + heightButton))
+			{ // -- Draw pictures as desired
+				cleardevice();
+				veUI();				
+				
+				isDraw = true;
+				displayTutorialDraw(true);
+				enable_click = false;
+				Drawing();
+				
+				isDrawPolygon = 1;
+				veUI();	
+				vedagiac();	
+				
+				displayTutorialDraw(false);
+				strcpy(textHelper, "Draw Success!");
+				drawTextHelper(textHelper, true, true);
+							
+				enable_click = true;
+				mouse();
+			}
+			
 			// FloodFill
 			if(x_mouse > buttonFloodFill.x && x_mouse < (buttonFloodFill.x + widthButton) 
 			&& y_mouse > buttonFloodFill.y && y_mouse < (buttonFloodFill.y + heightButton))
@@ -354,6 +415,7 @@ void mouse(){
 			&& y_mouse > buttonChangeColor.y && y_mouse < (buttonChangeColor.y + heightButton))
 			{
 				if (isDisplayAbout) displayAbout(false);
+				if (isDraw) displayTutorialDraw(false);
 								
 				drawTextHelper(textHelper, false, false);
 				strcpy(textHelper, "Please choose color..");
@@ -367,6 +429,7 @@ void mouse(){
 			&& y_mouse > buttonAbout.y && y_mouse < (buttonAbout.y + heightButton))
 			{
 				if (isDisplayColor)  colorPicker(false);
+				if (isDraw) displayTutorialDraw(false);
 				
 				drawTextHelper(textHelper, false, false);
 				displayAbout(true);
