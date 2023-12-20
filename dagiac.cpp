@@ -152,7 +152,7 @@ void scanline(){
 	printf("\nYmin = %d\n", ymin);
 	
 	// to mau do thi tu ymin -> ymax
-	for(int y=ymin; y<=ymax; y++){
+	for(int y=ymin+2; y<=ymax-2; y++){
 		int xgd[100];
 		int dem=0; //dem so luong diem cat
 		for(int i=0; i<sodinh; i++){
@@ -165,7 +165,7 @@ void scanline(){
 				printf("(%d, %d)\n", xgd[i],y);
 			}
 			for(int i=0; i<dem-1; i=i+2){
-				line(xgd[i],y,xgd[i+1],y);
+				line(xgd[i]+2,y,xgd[i+1]-2,y);
 				delay(1);
 			}
 		}
@@ -214,7 +214,7 @@ void displayTutorialDraw(bool isDisplay){
 	settextstyle(2,0,7);
 	outtextxy( 50,570,"Left click to draw graph");
 	setcolor(isDisplay? 12 : 0);
-	outtextxy( 50,600,"--- Right click to confirm completion ---");
+	outtextxy( 50,600,"--- Right click to choose point for FloodFill algorithm ---");
 }
 
 //=========== Ve border va cac Button ======================
@@ -231,34 +231,34 @@ void veUI(){
 	
 	//-------Load File Button
 	rectangle(buttonLoadFile.x,buttonLoadFile.y, buttonLoadFile.x + widthButton,buttonLoadFile.y + heightButton);
-	settextstyle(2,0,7);
+	
 	outtextxy(buttonLoadFile.x + 10 ,buttonLoadFile.y + 10,"Load File");
 	
 	//-------Draw Button
 	rectangle(buttonDraw.x,buttonDraw.y, buttonDraw.x + widthButton,buttonDraw.y + heightButton);
-	settextstyle(2,0,7);
+
 	outtextxy(buttonDraw.x + 25 ,buttonDraw.y + 10,"Draw");
 	
 	setcolor(isDrawPolygon == 1? 15: 8);
 	//----------Flood Fill Button
 	rectangle(buttonFloodFill.x,buttonFloodFill.y, buttonFloodFill.x + widthButton,buttonFloodFill.y + heightButton);
-	settextstyle(2,0,7);
+
 	outtextxy(buttonFloodFill.x + 10,buttonFloodFill.y + 10,"Flood Fill");
 	
 	//----------Starting Button
 	rectangle(buttonScanLine.x,buttonScanLine.y, buttonScanLine.x + widthButton,buttonScanLine.y + heightButton);
-	settextstyle(2,0,7);
+
 	outtextxy(buttonScanLine.x + 10,buttonScanLine.y + 10,"Scan Line");
 	
 	setcolor(15);
 	//----------Change Color Button
 	rectangle(buttonChangeColor.x,buttonChangeColor.y, buttonChangeColor.x + widthButton,buttonChangeColor.y + heightButton);
-	settextstyle(2,0,7);
+
 	outtextxy(buttonChangeColor.x + 25,buttonChangeColor.y + 10,"Color");
 	
 	//----------About Information Button
 	rectangle(buttonAbout.x,buttonAbout.y, buttonAbout.x + widthButton,buttonAbout.y + heightButton);
-	settextstyle(2,0,7);
+
 	outtextxy(buttonAbout.x + 25,buttonAbout.y + 10,"About");
 }
 
@@ -266,15 +266,14 @@ void veUI(){
 void Drawing(){
 	int x_mouse;
 	int y_mouse;
+	
+	int countRightClick = 0;
 	printf(" =============== ");
+	
+	memset(td, 0, sizeof(td));
 	sodinh = 0;
-
-    for (int i = 0; i < sodinh; i++) {
-        fscanf(fp, "%d %d", &td[i].x, &td[i].y); //doc toa do & in ra ca diem
-    }
-    
-    td[sodinh].x = td[0].x;
-    td[sodinh].y = td[0].y;
+	
+    setcolor(15);
 	
 	while(true){
 		//get even mouse click
@@ -283,28 +282,40 @@ void Drawing(){
 			getmouseclick(WM_LBUTTONDOWN, x_mouse, y_mouse);
 			//print x,y mouse to console
 			printf(" draw (%d,%d)",x_mouse,y_mouse);
+			
 			//checking for click in border 
 			if(x_mouse > topBorder.x && x_mouse < bottomBorder.x 
 				&& y_mouse > topBorder.y && y_mouse < bottomBorder.y)
 			{
 				printf("toa do duoc chon: (%d, %d) \n",x_mouse, y_mouse);
 				circle(x_mouse, y_mouse, 2);
-						
-				td[sodinh].x = x_mouse;
-				td[sodinh].y = y_mouse;
-				sodinh ++;
+				
+				if (countRightClick == 0) {
+					td[sodinh].x = x_mouse;
+					td[sodinh].y = y_mouse;
+					sodinh ++;
+				}else{
+					xc = x_mouse;
+					yc = y_mouse;
+					break;				
+				}
 			}
 			//check right mouse click to exit loop
 			
 		}
 		if(ismouseclick(WM_RBUTTONDOWN)){
 			getmouseclick(WM_RBUTTONDOWN,x_mouse,y_mouse);
-			printf("\nExiting Draw...");
 			
-			
-			td[sodinh].x = td[0].x;
-    		td[sodinh].y = td[0].y;	
-			break;
+			if (countRightClick  == 0){
+				countRightClick ++;
+				printf("\nExiting Draw...");
+				td[sodinh].x = td[0].x;
+	    		td[sodinh].y = td[0].y;	
+				vedagiac();
+				displayTutorialDraw(false);
+				setcolor(12);
+				outtextxy( 50,570,"--- Please choose point for filling graph with FloodFill algorithm ---");
+			}		
 		}
 		delay(1000);//wait for next cycle mouse click
 	}
@@ -319,7 +330,7 @@ void mouse(){
 	bool isDisplayColor = false;
 	
 	char textHelper[] = "Please Load File for run demo...";
-	drawTextHelper(textHelper, true, false);
+//	drawTextHelper(textHelper, true, false);
 	
 	while(enable_click){
 //		printf("enable_click");
@@ -357,16 +368,34 @@ void mouse(){
 				enable_click = false;
 				Drawing();
 				
-				isDrawPolygon = 1;
-				veUI();	
-				vedagiac();	
+				//------- clear text helper in screen ------
+				setcolor(0);
+				outtextxy( 50,570,"--- Please choose point for filling graph with FloodFill algorithm ---");
 				
-				displayTutorialDraw(false);
-				strcpy(textHelper, "Draw Success!");
-				drawTextHelper(textHelper, true, true);
-							
+				if (sodinh <= 2 ){
+					displayTutorialDraw(false);
+					
+					printf("Khong the ve do thi");
+										
+					strcpy(textHelper, "Can't draw graph!");
+					setcolor(12);
+					settextstyle(2,0,7);
+					outtextxy( 50,570,textHelper);
+					
+					
+				}else{
+					isDrawPolygon = 1;
+					veUI();	
+					vedagiac();	
+					
+					displayTutorialDraw(false);
+					strcpy(textHelper, "Draw Success!");
+					drawTextHelper(textHelper, true, true);
+					
+				}	
+					
 				enable_click = true;
-				mouse();
+				mouse();	
 			}
 			
 			// FloodFill
@@ -449,9 +478,14 @@ void mouse(){
 //chuong trinh chinh 
 int main() {
     initwindow(820,750);
+    settextstyle(2,0,7);
     veUI();
-	mouse();
-    getch();
+    
+    char textHelper[] = "Please Load File or Draw for run demo...";
+	drawTextHelper(textHelper, true, false);
+	
+	mouse();    
+    
     return 0;
 }
 
