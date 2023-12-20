@@ -361,6 +361,8 @@ void Drawing(){
 		if(ismouseclick(WM_RBUTTONDOWN)){
 			getmouseclick(WM_RBUTTONDOWN,x_mouse,y_mouse);
 			
+			if (sodinh <= 2) break;
+			
 			if (countRightClick  == 0){
 				countRightClick ++;
 				printf("\nExiting Draw...");
