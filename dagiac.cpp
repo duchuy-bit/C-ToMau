@@ -38,7 +38,7 @@ struct toado buttonChangeColor = { 30 + (100 + 30)*4, 500};
 struct toado buttonAbout       = { 30 + (100 + 30)*5, 500};
 
 //-------------- Button Choose Colors
-int x = 30, y = 600;
+int xButtonColor = 40, yButtonColor = 600;
 int width = 30, height = 30;
 int spaceColor = 20;
 
@@ -194,19 +194,14 @@ void drawTextHelper(char text[],bool display,  bool isSuccess){
 	outtextxy( 50,570,text);
 }
 
-void colorPicker(bool isDisplay){
-	int x = 30, y = 600;
-	int width = 30, height = 30;
-	int space = 20;
-
-	
+void colorPicker(bool isDisplay){	
 	for (int i=1; i<= 15; i++){
 		setcolor(isDisplay? i : 0);
 		setlinestyle(0,1,3);
 		
-		rectangle(x + (spaceColor + width) *(i-1), y , (x+ width) + (spaceColor + width) *(i-1) ,(y + height) );
+		rectangle(xButtonColor + (spaceColor + width) *(i-1), yButtonColor , (xButtonColor+ width) + (spaceColor + width) *(i-1) ,(yButtonColor + height) );
 		setfillstyle(SOLID_FILL,isDisplay? i : 0);
-		floodfill(x + (spaceColor + width) *(i-1) +5, y + 5, isDisplay? i : 0);
+		floodfill(xButtonColor + (spaceColor + width) *(i-1) +5, yButtonColor + 5, isDisplay? i : 0);
 	}
 }
 void displayAbout(bool isDisplay){
@@ -294,10 +289,10 @@ void ClickChooseColor(){
 			bool isClickTrue = false;
 			
 			for (int i=1; i<= 15; i++){
-				int xtopleft = x + (spaceColor + width) *(i-1);
-				int ytopleft = y;
-				int xbottomright = (x+ width) + (spaceColor + width) *(i-1);
-				int ybottomright = (y + height);
+				int xtopleft = xButtonColor + (spaceColor + width) *(i-1);
+				int ytopleft = yButtonColor;
+				int xbottomright = (xButtonColor+ width) + (spaceColor + width) *(i-1);
+				int ybottomright = (yButtonColor + height);
 				
 				printf("\n (%d, %d, %d, %d )  ",xtopleft, xbottomright, xbottomright, ybottomright );
 				
@@ -534,20 +529,11 @@ void mouse(){
 				strcpy(textHelper, "Choose color Success!");
 				drawTextHelper(textHelper, true, true);
 				
-				
-				if (isFill == 1){
-					FloodFill();
-					printf("\n FloodFill \n");
-				}else{
-					if (isFill == 2){
-						scanline();
-						printf("\n SCANLINE \n");
-					}
-					else{						
-						printf("\n NO FILL \n");
-					}
-				}
+				//To mau do thi (ham cua thu vien)
+				setfillstyle(SOLID_FILL, colorGraph);
+				floodfill(xc, yc, WHITE);		
 
+				// Goi lai su kien click chuot
 				enable_click = true;
 				mouse();
 			}
@@ -556,7 +542,6 @@ void mouse(){
 			if(x_mouse > buttonAbout.x && x_mouse < (buttonAbout.x + widthButton) 
 			&& y_mouse > buttonAbout.y && y_mouse < (buttonAbout.y + heightButton))
 			{
-//				if (isDisplayColor)  colorPicker(false);
 				isDisplayAbout = false;
 				
 				drawTextHelper(textHelper, false, false);
