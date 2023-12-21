@@ -166,12 +166,12 @@ void scanline(){
 		for(int i=0; i<sodinh; i++){
 			if((y<td[i].y && y>=td[i+1].y)||(y>=td[i].y && y<td[i+1].y)){
 				xgd[dem++]=round(td[i].x + (float)(y-td[i].y)/m[i]);
-				printf("    (%d, %d)", xgd[dem-1],y);
+//				printf("    (%d, %d)", xgd[dem-1],y);
 			}
 					
-			for(int i=0; i<=dem; i++){
-				printf("(%d, %d)\n", xgd[i],y);
-			}
+//			for(int i=0; i<=dem; i++){
+//				printf("(%d, %d)\n", xgd[i],y);
+//			}
 			for(int i=0; i<dem-1; i=i+2){
 				line(xgd[i]+2,y,xgd[i+1]-2,y);
 				delay(1);
@@ -530,8 +530,10 @@ void mouse(){
 				drawTextHelper(textHelper, true, true);
 				
 				//To mau do thi (ham cua thu vien)
-				setfillstyle(SOLID_FILL, colorGraph);
-				floodfill(xc, yc, WHITE);		
+				if (sodinh  != 0){
+					setfillstyle(SOLID_FILL, colorGraph);
+					floodfill(xc, yc, WHITE);		
+				}
 
 				// Goi lai su kien click chuot
 				enable_click = true;
