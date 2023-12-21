@@ -159,8 +159,10 @@ void scanline(){
 	printf("\nYmax = %d", ymax);
 	printf("\nYmin = %d\n", ymin);
 	
+	int tam ;
+	
 	// to mau do thi ymin -> ymax
-	for(int y=ymin+1; y<=ymax-1; y++){
+	for(int y=ymin+2; y<=ymax-2; y++){
 		int xgd[100];
 		int dem=0; //dem so luong diem cat
 		for(int i=0; i<sodinh; i++){
@@ -169,13 +171,26 @@ void scanline(){
 //				printf("    (%d, %d)", xgd[dem-1],y);
 			}
 					
-//			for(int i=0; i<=dem; i++){
-//				printf("(%d, %d)\n", xgd[i],y);
-//			}
-			for(int i=0; i<dem-1; i=i+2){
-				line(xgd[i]+2,y,xgd[i+1]-2,y);
-				delay(1);
+			
+		}
+		for(int i=0; i<dem-1; i++){
+			for (int j = i+1 ; j< dem ; j++)
+			{
+				if (xgd[i] > xgd[j]){
+					tam = xgd[i];
+					xgd[i] = xgd[j];
+					xgd[j] = tam;
+				}
 			}
+			
+		}
+		for(int i=0; i<dem; i++){
+				printf("(%d, %d)    ", xgd[i],y);
+		}
+		printf("\n");
+		for(int i=0; i<dem-1; i=i+2){
+			line(xgd[i]+2,y,xgd[i+1]-2,y);
+			delay(1);
 		}
 	}
 }
