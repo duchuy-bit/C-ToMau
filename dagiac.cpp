@@ -10,21 +10,27 @@
 
 using namespace std;
 
+//------ Stop Loop check Click mouse ----
 int enable_click  = 1;
+//------------------------
 int isDrawPolygon = 0;
 bool isDraw = false;
 
+//------ Color Fill Default ----
 int colorGraph = 2;
 
+//--------------------------
 struct toado {
     int x;
     int y;
 };
+//--------------Dinh Da giac-----------------
+int sodinh, xc, yc;
+struct toado td[MAX]; //moi td la mot kieu toado(x,y)
 
-int sodinh, xc = 234, yc =134;
 FILE *fp;
 
-struct toado td[MAX]; //moi td la mot kieu toado(x,y)
+
 
 // khai bao kich thuoc button (chieu cao va chieu rong)
 int widthButton = 100, heightButton = 40;
@@ -78,7 +84,8 @@ void printfpoints(struct toado m[MAX], int size) {
 //to mau ben phai
 void FillRight(int xa, int ya)
 { 		
-	if(getpixel(xa,ya) == 0) //mau nen la mau den (BLACK) nen ham getpixel tra ve gia tri la 0
+	if(getpixel(xa,ya) == 0) 
+	//mau nen la mau den (BLACK) nen ham getpixel tra ve gia tri la 0
 	{
 	  	putpixel(xa,ya,colorGraph);
 	  	//delay(1);
@@ -99,7 +106,8 @@ void FillRight(int xa, int ya)
 //to mau ben trai
 void FillLeft(int xa, int ya)
 { 	
-	if(getpixel(xa,ya) == 0) //mau nen la mau den (BLACK) nen ham getpixel tra ve gia tri la 0
+	if(getpixel(xa,ya) == 0) 
+	//mau nen la mau den (BLACK) nen ham getpixel tra ve gia tri la 0
 	{
 	  	putpixel(xa,ya,colorGraph);
 	  	//delay(1);
@@ -168,10 +176,7 @@ void scanline(){
 		for(int i=0; i<sodinh; i++){
 			if((y<td[i].y && y>=td[i+1].y)||(y>=td[i].y && y<td[i+1].y)){
 				xgd[dem++]=round(td[i].x + (float)(y-td[i].y)/m[i]);
-//				printf("    (%d, %d)", xgd[dem-1],y);
-			}
-					
-			
+			}	
 		}
 		for(int i=0; i<dem-1; i++){
 			for (int j = i+1 ; j< dem ; j++)
@@ -181,8 +186,7 @@ void scanline(){
 					xgd[i] = xgd[j];
 					xgd[j] = tam;
 				}
-			}
-			
+			}			
 		}
 		for(int i=0; i<dem; i++){
 				printf("(%d, %d)    ", xgd[i],y);
@@ -246,41 +250,41 @@ struct toado bottomBorder = { 800,480};
 void veUI(){
 	//--------- ve border --------------
 	setcolor(15);
-	setlinestyle(0,1,3);
+	setlinestyle(0,1,3);D
 	rectangle(topBorder.x,topBorder.y, bottomBorder.x,bottomBorder.y);
 	
 	setcolor(15);
 	
 	//-------Load File Button
-	rectangle(buttonLoadFile.x,buttonLoadFile.y, buttonLoadFile.x + widthButton,buttonLoadFile.y + heightButton);
-	
+	rectangle(buttonLoadFile.x,buttonLoadFile.y, 
+	DbuttonLoadFile.x + widthButton,buttonLoadFile.y + heightButton);
 	outtextxy(buttonLoadFile.x + 10 ,buttonLoadFile.y + 10,"Load File");
 	
 	//-------Draw Button
-	rectangle(buttonDraw.x,buttonDraw.y, buttonDraw.x + widthButton,buttonDraw.y + heightButton);
-
+	rectangle(buttonDraw.x,buttonDraw.y, 
+	buttonDraw.x + widthButton,buttonDraw.y + heightButton);
 	outtextxy(buttonDraw.x + 25 ,buttonDraw.y + 10,"Draw");
-	
+
 	setcolor(isDrawPolygon == 1? 15: 8);
 	//----------Flood Fill Button
-	rectangle(buttonFloodFill.x,buttonFloodFill.y, buttonFloodFill.x + widthButton,buttonFloodFill.y + heightButton);
-
+	rectangle(buttonFloodFill.x,buttonFloodFill.y, 
+	buttonFloodFill.x + widthButton,buttonFloodFill.y + heightButton);
 	outtextxy(buttonFloodFill.x + 10,buttonFloodFill.y + 10,"Flood Fill");
 	
 	//----------Starting Button
-	rectangle(buttonScanLine.x,buttonScanLine.y, buttonScanLine.x + widthButton,buttonScanLine.y + heightButton);
-
+	rectangle(buttonScanLine.x,buttonScanLine.y, 
+	buttonScanLine.x + widthButton,buttonScanLine.y + heightButton);
 	outtextxy(buttonScanLine.x + 10,buttonScanLine.y + 10,"Scan Line");
 	
 	setcolor(15);
 	//----------Change Color Button
-	rectangle(buttonChangeColor.x,buttonChangeColor.y, buttonChangeColor.x + widthButton,buttonChangeColor.y + heightButton);
-
+	rectangle(buttonChangeColor.x,buttonChangeColor.y, 
+	buttonChangeColor.x + widthButton,buttonChangeColor.y + heightButton);
 	outtextxy(buttonChangeColor.x + 25,buttonChangeColor.y + 10,"Color");
 	
 	//----------About Information Button
-	rectangle(buttonAbout.x,buttonAbout.y, buttonAbout.x + widthButton,buttonAbout.y + heightButton);
-
+	rectangle(buttonAbout.x,buttonAbout.y, 
+	buttonAbout.x + widthButton,buttonAbout.y + heightButton);
 	outtextxy(buttonAbout.x + 25,buttonAbout.y + 10,"About");
 }
 
@@ -306,10 +310,8 @@ void ClickChooseColor(){
 			for (int i=1; i<= 15; i++){
 				int xtopleft = xButtonColor + (spaceColor + width) *(i-1);
 				int ytopleft = yButtonColor;
-				int xbottomright = (xButtonColor+ width) + (spaceColor + width) *(i-1);
+				int xbottomright=(xButtonColor+ width)+(spaceColor + width)*(i-1);
 				int ybottomright = (yButtonColor + height);
-				
-				printf("\n (%d, %d, %d, %d )  ",xtopleft, xbottomright, xbottomright, ybottomright );
 				
 				if(x_mouse > xtopleft && x_mouse < xbottomright
 				&& y_mouse > ytopleft && y_mouse < ybottomright)
@@ -392,17 +394,12 @@ void Drawing(){
 int isFill = 0;
 void mouse(){
 	int x_mouse;
-	int y_mouse;
-	
+	int y_mouse;	
 	bool isDisplayAbout = false;
 	bool isDisplayColor = false;
-	
-	
 	char textHelper[] = "Please Load File for run demo...";
-//	drawTextHelper(textHelper, true, false);
 	
 	while(enable_click){
-//		printf("enable_click");
 		//get even mouse click
 		if(ismouseclick(WM_LBUTTONDOWN)){
 			//get position of mouse
@@ -412,7 +409,7 @@ void mouse(){
 			//checking for buttons
 			if(x_mouse > buttonLoadFile.x && x_mouse <( buttonLoadFile.x + widthButton ) 
 				&& y_mouse > buttonLoadFile.y && y_mouse < (buttonLoadFile.y + heightButton))
-			{//load file button
+			{//load file 
 				//read from file
 				cleardevice();
 				
@@ -466,7 +463,6 @@ void mouse(){
 				enable_click = true;
 				mouse();	
 			}
-			
 			// FloodFill
 			if(x_mouse > buttonFloodFill.x && x_mouse < (buttonFloodFill.x + widthButton) 
 			&& y_mouse > buttonFloodFill.y && y_mouse < (buttonFloodFill.y + heightButton))
@@ -512,10 +508,10 @@ void mouse(){
 					isFill = 2;
 				}
 			}
-			
 			//-------------- Click Change Colors ----------------
 			if(x_mouse > buttonChangeColor.x && x_mouse < (buttonChangeColor.x + widthButton) 
 			&& y_mouse > buttonChangeColor.y && y_mouse < (buttonChangeColor.y + heightButton))
+			// Change color
 			{
 				isDraw = false;
 				isDisplayAbout = false;
@@ -554,11 +550,10 @@ void mouse(){
 				enable_click = true;
 				mouse();
 			}
-			
 			//-------------- Click About ----------------
 			if(x_mouse > buttonAbout.x && x_mouse < (buttonAbout.x + widthButton) 
 			&& y_mouse > buttonAbout.y && y_mouse < (buttonAbout.y + heightButton))
-			{
+			{// Display about
 				isDisplayAbout = false;
 				
 				drawTextHelper(textHelper, false, false);
@@ -581,7 +576,6 @@ int main() {
     initwindow(820,750);
     settextstyle(2,0,7);
     veUI();
-    
     char textHelper[] = "Please Load File or Draw for run demo...";
 	drawTextHelper(textHelper, true, false);
 	
